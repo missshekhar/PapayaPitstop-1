@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Track Layout Impact Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #FFF;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            text-align: center;
+            padding: 20px;
+        }
+        #trackCanvas {
+            border: 2px solid #FFD700; /* Golden border similar to F1 cars */
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+        }
+        #controls {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        #controls label,
+        #controls button {
+            color: #FFD700;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        #controls select {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #FFD700;
+            background-color: #444;
+            color: #FFF;
+        }
+        #controls button {
+            background-color: #FFD700;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        #controls button:hover {
+            background-color: #FFAA00;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>F1 Track Layout Impact Analysis</h1>
+        <div id="controls">
+            <label for="trackSelection">Select Track:</label>
+            <select id="trackSelection">
+                <option value="monza">Monza</option>
+                <option value="silverstone">Silverstone</option>
+                <option value="spa">Spa</option>
+                <!-- Add more tracks as necessary -->
+            </select>
+            <button onclick="drawTrack()">Analyze Track</button>
+        </div>
+        <canvas id="trackCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('trackCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const tracks = {
+            'monza': [
+                { x: 50, y: 150 },
+                { x: 150, y: 250 },
+                { x: 250, y: 150 }
+                // More points for Monza
+            ],
+            'silverstone': [
+                { x: 100, y: 100 },
+                { x: 200, y: 200 },
+                { x: 300, y: 100 }
+                // More points for Silverstone
+            ],
+            'spa': [
+                { x: 75, y: 50 },
+                { x: 225, y: 200 },
+                { x: 375, y: 100 }
+                // More points for Spa
+            ]
+            // Add more track data as necessary
+        };
+
+        function drawTrack() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const selectedTrack = document.getElementById('trackSelection').value;
+            console.log('Fetching data for track:', selectedTrack);
+            
+            fetch(`https://path-to-your-backend-api/track-data?track=${selectedTrack}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(trackData => {
+                    console.log('Track data received:', trackData);
+                    if (trackData.length > 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(trackData[0].x, trackData[0].y);
+                        trackData.forEach(point => ctx.lineTo(point.x, point.y));
+                        ctx.stroke();
+                    } else {
+                        console.error('No track data available for this selection');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
